@@ -5,7 +5,7 @@ if(typeof actor === "undefined"){
 				mod: 0
 			},
 			str: {
-				mode: 0
+				mod: 0
 			}
 		},
 		attributes: {
@@ -48,7 +48,7 @@ class TestChatMessage{
 	* @param {Object} message
 	*/
 	static create(message){
-		
+		document.getElementById("test").innerHTML = message.content;
 	}
 	
 	/**
