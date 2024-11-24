@@ -38,7 +38,7 @@ class TestRoll{
 	*/
 	async roll(){
 		return {
-			total: 10
+			total: Math.floor(Math.random() * 20) + 1
 		};
 	}
 }
@@ -60,18 +60,46 @@ class TestChatMessage{
 	}
 }
 
+function mapGenerator(map, roll, ConMod, Prof){
+	const mapDiv = document.createElement("div");
+	const mapSpanFront = document.createElement("span");
+	mapSpanFront.textContent = `MAP ${map}: `;
+	const mapStrong = document.createElement("strong");
+	mapStrong.textContent = roll.total + ConMod + Prof + map;
+	const mapSpanBack = document.createElement("span");
+	const penalty = (map === 0) ? "" : ` ${map}`;
+	mapSpanBack.textContent = ` (${roll.total} + ${ConMod} + ${Prof}${penalty})`;
+	mapDiv.appendChild(mapSpanFront);
+	mapDiv.appendChild(mapStrong);
+	mapDiv.appendChild(mapSpanBack);
+	return mapDiv;
+}
+
 async function crabAttackRoll(){
 	const ConMod = actor.abilities.con.mod;
 	const Prof = (actor.attributes.spellDC.value - 10 - ConMod);
-	let roll = (typeof Roll === "function") ? await new Roll("1d20").roll() : await new TestRoll("1d20").roll();
-	let attack_results_html = ``;
+	const roll = (typeof Roll === "function") ? await new Roll("1d20").roll() : await new TestRoll("1d20").roll();
+	const attackContainer = document.createElement("div");
+	const attackHeading = document.createElement("h2");
+	attackHeading.textContent = "Attack Roll";
+	attackContainer.appendChild(attackHeading);
+	const critHeading = document.createElement("h3");
+	attackContainer.appendChild(critHeading);
+	attackContainer.appendChild(mapGenerator(0, roll, ConMod, Prof));
+	attackContainer.appendChild(mapGenerator(-5, roll, ConMod, Prof));
+	attackContainer.appendChild(mapGenerator(-10, roll, ConMod, Prof));
+	const strongList = attackContainer.getElementsByTagName("strong");
 
 	if (roll.total === 1) {
-		attack_results_html = `<h2>Attack Roll</h2><h3 style='color:red'>Natural 1!</h3>MAP 0: <strong style='color:red'>${roll.total + ConMod + Prof}</strong> (${roll.total} + ${ConMod} + ${Prof})<br>MAP -5: <strong style='color:red'>${roll.total + ConMod + Prof - 5}</strong> (${roll.total} + ${ConMod} + ${Prof} - 5)<br>MAP -10: <strong style='color:red'>${roll.total + ConMod + Prof - 10}</strong> (${roll.total} + ${ConMod} + ${Prof} - 10)`;
+		critHeading.style.color = "red";
+		critHeading.textContent = "Natural 1!";
+		for(let strong of strongList)
+			strong.style.color = "red";
 	} else if (roll.total === 20) {
-		attack_results_html = `<h2>Attack Roll</h2><h3 style='color:green'>Natural 20!</h3>MAP 0: <strong style='color:green'>${roll.total + ConMod + Prof}</strong> (${roll.total} + ${ConMod} + ${Prof})<br>MAP -5: <strong style='color:green'>${roll.total + ConMod + Prof - 5}</strong> (${roll.total} + ${ConMod} + ${Prof} - 5)<br>MAP -10: <strong style='color:green'>${roll.total + ConMod + Prof - 10}</strong> (${roll.total} + ${ConMod} + ${Prof} - 10)`;
-	} else {
-		attack_results_html = `<h2>Attack Roll</h2>MAP 0: <strong>${roll.total + ConMod + Prof}</strong> (${roll.total} + ${ConMod} + ${Prof})<br>MAP -5: <strong>${roll.total + ConMod + Prof - 5}</strong> (${roll.total} + ${ConMod} + ${Prof} - 5)<br>MAP -10: <strong>${roll.total + ConMod + Prof - 10}</strong> (${roll.total} + ${ConMod} + ${Prof} - 10)`;
+		critHeading.style.color = "green";
+		critHeading.textContent = "Natural 20!";
+		for(let strong of strongList)
+			strong.style.color = "green";
 	}
 
 	let damage_foreward_html = `<h3>Damage</h3>Damage Types:Bludgeoning, Cold, Piercing, Slashing, or Vitality<br> Melee Traits: Agile, Backswing, Forceful, Reach, or Sweep <br>Ranged Traits: Range Increment 100 & Volley 30 ft, Range Increment 50 & Propulsive, Range Increment 20 & Thrown<br>`;
@@ -105,13 +133,13 @@ async function crabAttackRoll(){
 		ChatMessage.create({
 			user: game.user._id,
 			speaker: ChatMessage.getSpeaker({token: actor}),
-			content: attack_results_html + damage_foreward_html + damage_results_html
+			content: attackContainer.innerHTML
 		});
 	}else{
 		TestChatMessage.create({
 			user: game.user._id,
 			speaker: TestChatMessage.getSpeaker({token: actor}),
-			content: attack_results_html + damage_foreward_html + damage_results_html
+			content: attackContainer.innerHTML + damage_foreward_html + damage_results_html
 		});
 	}
 }
