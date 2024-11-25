@@ -1,3 +1,4 @@
+//testing actor
 if(typeof actor === "undefined"){
 	window.actor = {
 		abilities: {
@@ -17,6 +18,7 @@ if(typeof actor === "undefined"){
 	};
 }
 
+//testing game id
 if(typeof game === "undefined"){
 	window.game = {
 		user: {
@@ -25,6 +27,7 @@ if(typeof game === "undefined"){
 	};
 }
 
+//always rolls a d20
 class TestRoll{
 	/**
 	* @param {string} dice
@@ -43,6 +46,7 @@ class TestRoll{
 	}
 }
 
+//inserts html into the test.html file
 class TestChatMessage{
 	/**
 	* @param {Object} message
@@ -60,6 +64,7 @@ class TestChatMessage{
 	}
 }
 
+//generates that one MAP line so we don't replicate the code 3 times
 /**
 * @param {number} map
 * @param {Object} roll
@@ -82,10 +87,13 @@ function mapGenerator(map, roll, conMod, prof){
 	return mapDiv;
 }
 
+//keep this async so we can use the await for the rolls
 async function crabAttackRoll(){
 	const conMod = actor.abilities.con.mod;
 	const prof = (actor.attributes.spellDC.value - 10 - conMod);
+	//just checks if we're using the test roll or the real roll
 	const roll = (typeof Roll === "function") ? await new Roll("1d20").roll() : await new TestRoll("1d20").roll();
+	//this just contains all the html elements
 	const attackContainer = document.createElement("div");
 	
 	const attackHeading = document.createElement("h2");
@@ -98,6 +106,7 @@ async function crabAttackRoll(){
 	attackContainer.appendChild(mapGenerator(-5, roll, conMod, prof));
 	attackContainer.appendChild(mapGenerator(-10, roll, conMod, prof));
 	
+	//need to find all the strong elements we created to make them red or green for 1s and 20s
 	const strongList = attackContainer.getElementsByTagName("strong");
 	if (roll.total === 1) {
 		critHeading.style.color = "red";
@@ -125,7 +134,9 @@ async function crabAttackRoll(){
 	attackContainer.appendChild(meleeTraitsPar);
 	attackContainer.appendChild(rangedTraitsPar);
 
+	//this one line takes care of the die count, no need for if statements
 	const dieCount = Math.ceil(actor.level / 4);
+	//just checks if we're using the test roll or the real roll
 	const damageRoll = (typeof Roll === "function") ? await new Roll(`${dieCount}d8`).roll() : await new TestRoll(`${dieCount}d8`).roll();
 	
 	const oneActionHeading = document.createElement("h4");
