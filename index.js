@@ -101,8 +101,20 @@ async function crabAttackRoll(){
 		for(let strong of strongList)
 			strong.style.color = "green";
 	}
+	
+	const damageHeading = document.createElement("h3");
+	damageHeading.textContent = "Damage";
+	const damageTypesPar = document.createElement("p");
+	damageTypesPar.textContent = "Damage Types:Bludgeoning, Cold, Piercing, Slashing, or Vitality";
+	const meleeTraitsPar = document.createElement("p");
+	meleeTraitsPar.textContent = "Melee Traits: Agile, Backswing, Forceful, Reach, or Sweep";
+	const rangedTraitsPar = document.createElement("p");
+	rangedTraitsPar.textContent = "Ranged Traits: Range Increment 100 & Volley 30 ft, Range Increment 50 & Propulsive, Range Increment 20 & Thrown";
+	attackContainer.appendChild(damageHeading);
+	attackContainer.appendChild(damageTypesPar);
+	attackContainer.appendChild(meleeTraitsPar);
+	attackContainer.appendChild(rangedTraitsPar);
 
-	let damage_foreward_html = `<h3>Damage</h3>Damage Types:Bludgeoning, Cold, Piercing, Slashing, or Vitality<br> Melee Traits: Agile, Backswing, Forceful, Reach, or Sweep <br>Ranged Traits: Range Increment 100 & Volley 30 ft, Range Increment 50 & Propulsive, Range Increment 20 & Thrown<br>`;
 	let dieCount = 0;
 
 	if (actor.level < 5) {
@@ -139,7 +151,7 @@ async function crabAttackRoll(){
 		TestChatMessage.create({
 			user: game.user._id,
 			speaker: TestChatMessage.getSpeaker({token: actor}),
-			content: attackContainer.innerHTML + damage_foreward_html + damage_results_html
+			content: attackContainer.innerHTML + damage_results_html
 		});
 	}
 }
